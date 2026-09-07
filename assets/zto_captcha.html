@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>中通快递 - 会员助手</title>
+<!-- 顶象安全滑动验证码 -->
+<script src="https://cdn.dingxiang-inc.com/ctu-group/captcha-ui/v5/index.js" crossorigin="anonymous"></script>
+<script>
+// 阻断式首屏主题嗅探：在 DOM 和样式首帧绘制前立即执行，彻底杜绝闪白
+(function() {
+  try {
+    var isDark = false;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      isDark = true;
+    }
+    var saved = localStorage.getItem('app_theme');
+    if (saved === 'dark') isDark = true;
+    if (saved === 'light') isDark = false;
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+})();
+</script>
+<style>
+:root {
+  --primary: #e43d2b;
+  --primary-dark: #cb2d1c;
+  --primary-light: #fff2f0;
+  --primary-gradient: linear-gradient(135deg, #ff5745 0%, #e43d2b 100%);
+  --bg-color: #f6f8fb;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+  --shadow-btn: 0 8px 20px -4px rgba(228, 61, 43, 0.35);
+  --input-bg: #f8fafc;
+  --input-focus-bg: #ffffff;
+  --tab-box-bg: #f1f5f9;
+  --tab-active-bg: #ffffff;
+}
+
+/* 夜间深色模式全量适配 (与小助手黑蓝质感 100% 对齐) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg-color: #0b0f19;
+    --card-bg: #151d2f;
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --text-muted: #64748b;
+    --border: #26334d;
+    --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+    --input-bg: #101625;
+    --input-focus-bg: #151d2f;
+    --tab-box-bg: #101625;
+    --tab-active-bg: #1e293b;
+  }
+}
+
+:root[data-theme='dark'], :root.dark, body.dark {
+  --bg-color: #0b0f19;
+  --card-bg: #151d2f;
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --text-muted: #64748b;
+  --border: #26334d;
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+  --input-bg: #101625;
+  --input-focus-bg: #151d2f;
+  --tab-box-bg: #101625;
+  --tab-active-bg: #1e293b;
+}
+
+:root[data-theme='dark'] .brand-title, :root.dark .brand-title, body.dark .brand-title {
+  color: #f8fafc !important;
+}
+
+:root[data-theme='dark'] .card-main, :root.dark .card-main, body.dark .card-main {
+  background: #151d2f !important;
+  border: 1px solid #26334d !important;
+}
+
+:root[data-theme='dark'] .nav-tab-box, :root.dark .nav-tab-box, body.dark .nav-tab-box {
+  background: #101625 !important;
+}
+
+:root[data-theme='dark'] .nav-tab-item, :root.dark .nav-tab-item, body.dark .nav-tab-item {
+  color: #94a3b8 !important;
+}
+
+:root[data-theme='dark'] .nav-tab-item.active, :root.dark .nav-tab-item.active, body.dark .nav-tab-item.active {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+:root[data-theme='dark'] .field-label, :root.dark .field-label, body.dark .field-label {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme='dark'] .field-input, :root.dark .field-input, body.dark .field-input {
+  background: #101625 !important;
+  border-color: #26334d !important;
+  color: #f8fafc !important;
+}
+
+:root[data-theme='dark'] .field-input:focus, :root.dark .field-input:focus, body.dark .field-input:focus {
+  background: #151d2f !important;
+  border-color: var(--primary) !important;
+}
+
+:root[data-theme='dark'] .btn-secondary, :root.dark .btn-secondary, body.dark .btn-secondary {
+  background: #151d2f !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+:root[data-theme='dark'] .btn-secondary:disabled, :root.dark .btn-secondary:disabled, body.dark .btn-secondary:disabled {
+  background: #101625 !important;
+  border-color: #26334d !important;
+  color: #64748b !important;
+}
+
+:root[data-theme='dark'] .dx-box-btn, :root.dark .dx-box-btn, body.dark .dx-box-btn {
+  background: #101625 !important;
+  border-color: #26334d !important;
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme='dark'] .dx-box-btn.verified, :root.dark .dx-box-btn.verified, body.dark .dx-box-btn.verified {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+}
+
+:root[data-theme='dark'] .result-textarea, :root.dark .result-textarea, body.dark .result-textarea {
+  background: #101625 !important;
+  border-color: #26334d !important;
+  color: #f8fafc !important;
+}
+
+:root[data-theme='dark'] .btn-copy-token, :root.dark .btn-copy-token, body.dark .btn-copy-token {
+  background: #151d2f !important;
+}
+
+:root[data-theme='dark'] .badge-status, :root.dark .badge-status, body.dark .badge-status {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+  color: #34d399 !important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-main);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 12px;
+  padding-bottom: 20px;
+}
+
+/* 顶部原生感 AppBar (由 Flutter 原生 AppBar 统一承载，此处隐藏杜绝双顶栏) */
+.appbar {
+  display: none !important;
+}
+
+.brand {
+  display: none !important;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--primary-gradient);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(228, 61, 43, 0.25);
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+}
+
+.brand-title span {
+  color: var(--primary);
+}
+
+.badge-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 5px 12px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-status::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+/* 主内容全屏流式布局 */
+.content-wrapper {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px 16px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 卡片容器 */
+.card-main {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 24px 20px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+}
+
+/* 返回按钮 */
+.back-header {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+/* 现代化 Tab 切换 */
+.nav-tab-box {
+  display: flex;
+  background: var(--tab-box-bg);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 22px;
+}
+
+.nav-tab-item {
+  flex: 1;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-sub);
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.nav-tab-item.active {
+  background: var(--tab-active-bg);
+  color: var(--primary);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* 输入框与表单 */
+.form-field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.field-input:focus {
+  background: var(--input-focus-bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(228, 61, 43, 0.1);
+}
+
+.field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.field-row .field-input {
+  flex: 1;
+}
+
+.btn-secondary {
+  height: 50px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--primary);
+  background: #ffffff;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:disabled {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* 验证码按钮 */
+.captcha-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.captcha-img-box {
+  height: 50px;
+  min-width: 120px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  object-fit: contain;
+  background: #fff;
+}
+
+.dx-box-btn {
+  flex: 1;
+  height: 50px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dx-box-btn:active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.dx-box-btn.verified {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #059669;
+  cursor: default;
+}
+
+/* 主提交按钮 (全宽 Flutter 质感) */
+.btn-primary-action {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary-gradient);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-btn);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary-action:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(228, 61, 43, 0.25);
+}
+
+.btn-primary-action:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 辅助与协议 */
+.actions-sub {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0 16px;
+}
+
+.text-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.protocol-notice {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 14px 0 16px;
+}
+
+.protocol-notice a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* 提示信息 */
+.alert-tip {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 18px;
+  display: none;
+  animation: slideDown 0.2s ease;
+}
+
+.alert-tip.error {
+  display: block;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.alert-tip.success {
+  display: block;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+}
+
+/* 忘记密码步骤 */
+.steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.step-node {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s;
+}
+
+.step-node.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(228, 61, 43, 0.15);
+}
+
+.step-node.done {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+.step-bar {
+  flex: 1;
+  height: 2px;
+  background: #e2e8f0;
+  margin: 0 8px;
+}
+
+.step-bar.done {
+  background: #10b981;
+}
+
+/* Token 展示 */
+.result-container {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+.result-container.show {
+  display: block;
+}
+
+.result-caption {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.result-textarea {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: Consolas, Menlo, Monaco, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #0f172a;
+  word-break: break-all;
+  max-height: 140px;
+  overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  margin-bottom: 12px;
+}
+
+.btn-copy-token {
+  width: 100%;
+  height: 44px;
+  background: #ffffff;
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-copy-token:active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-copy-token.copied {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+/* 底部提示 */
+.footer-note {
+  margin-top: auto;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 20px 16px 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="brand">
+    <div class="brand-icon">Z</div>
+    <div class="brand-title">中通<span>助手</span></div>
+  </div>
+  <div class="badge-status">本地官方直连</div>
+</header>
+
+<main class="content-wrapper">
+  <div class="card-main">
+    <div class="back-header" id="backBtn" onclick="backToMain()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      返回登录
+    </div>
+
+    <!-- 顶部选项卡 -->
+    <div class="nav-tab-box" id="tabBar">
+      <button class="nav-tab-item active" data-tab="login">账号登录</button>
+      <button class="nav-tab-item" data-tab="register">注册账号</button>
+    </div>
+
+    <!-- 消息提示栏 -->
+    <div id="alertBanner" class="alert-tip"></div>
+
+    <!-- ════ 登录 ════ -->
+    <section id="loginPanel">
+      <div class="form-field">
+        <label class="field-label">手机号码</label>
+        <input type="tel" id="loginPhone" class="field-input" placeholder="请输入中通手机号" maxlength="11">
+      </div>
+      <div class="form-field">
+        <label class="field-label">登录密码</label>
+        <input type="password" id="loginPwd" class="field-input" placeholder="请输入登录密码">
+      </div>
+      <div class="actions-sub">
+        <span class="text-btn" onclick="showForgotPassword()">忘记密码？</span>
+      </div>
+      <button class="btn-primary-action" id="loginBtn" onclick="doLogin()">立即登录</button>
+    </section>
+
+    <!-- ════ 注册 ════ -->
+    <section id="registerPanel" class="hidden">
+      <div class="form-field">
+        <label class="field-label">手机号码</label>
+        <input type="tel" id="regPhone" class="field-input" placeholder="请输入11位手机号码" maxlength="11">
+      </div>
+      <div class="form-field">
+        <label class="field-label">安全验证</label>
+        <div class="captcha-wrapper">
+          <input type="text" id="regPicCode" class="field-input" placeholder="图形验证码" style="display:none">
+          <img id="regCaptchaImg" class="captcha-img-box" src="" alt="验证码" onclick="refreshCaptcha()" style="display:none">
+          <button id="dxCaptchaBtnR" class="dx-box-btn" onclick="openDxCaptcha()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            点击完成安全验证
+          </button>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">短信验证码</label>
+        <div class="field-row">
+          <input type="text" id="regSmsCode" class="field-input" placeholder="6位验证码" maxlength="6">
+          <button id="regSmsBtn" class="btn-secondary" onclick="sendRegisterSms()">获取验证码</button>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">设置密码</label>
+        <input type="password" id="regPwd" class="field-input" placeholder="8-20位，字母/数字/符号至少2种">
+      </div>
+      <div class="form-field">
+        <label class="field-label">确认密码</label>
+        <input type="password" id="regPwd2" class="field-input" placeholder="请再次输入新密码">
+      </div>
+      <div class="protocol-notice">
+        注册即视为同意官方 <a href="https://mtoc.zto.com/agreement/user-protocol.html" target="_blank">《用户服务协议》</a> 及 <a href="https://mtoc.zto.com/agreement/privacy-policy.html" target="_blank">《隐私政策》</a>
+      </div>
+      <button class="btn-primary-action" id="regBtn" onclick="doRegister()">立即注册</button>
+    </section>
+
+    <!-- ════ 忘记密码 ════ -->
+    <section id="forgotPanel" class="hidden">
+      <div class="steps-container">
+        <div class="step-node active" id="stepDot1">1</div>
+        <div class="step-bar" id="stepLine1"></div>
+        <div class="step-node" id="stepDot2">2</div>
+        <div class="step-bar" id="stepLine2"></div>
+        <div class="step-node" id="stepDot3">3</div>
+      </div>
+
+      <div id="forgotStep1">
+        <div class="form-field">
+          <label class="field-label">手机号码</label>
+          <input type="tel" id="forgotPhone" class="field-input" placeholder="请输入已绑定手机号" maxlength="11">
+        </div>
+        <div class="form-field">
+          <label class="field-label">安全验证</label>
+          <div class="captcha-wrapper">
+            <input type="text" id="forgotPicCode" class="field-input" placeholder="图形验证码" style="display:none">
+            <img id="forgotCaptchaImg" class="captcha-img-box" src="" alt="验证码" onclick="refreshForgotCaptcha()" style="display:none">
+            <button id="dxCaptchaBtnF" class="dx-box-btn" onclick="openForgotDxCaptcha()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              点击完成安全验证
+            </button>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">短信验证码</label>
+          <div class="field-row">
+            <input type="text" id="forgotSmsCode" class="field-input" placeholder="6位验证码" maxlength="6">
+            <button id="forgotSmsBtn" class="btn-secondary" onclick="sendForgotSms()">获取验证码</button>
+          </div>
+        </div>
+        <button class="btn-primary-action" id="forgotStep1Btn" onclick="verifyForgotCode()">下一步</button>
+      </div>
+
+      <div id="forgotStep2" class="hidden">
+        <div class="form-field">
+          <label class="field-label">新密码</label>
+          <input type="password" id="forgotNewPwd" class="field-input" placeholder="8-20位，字母/数字/符号至少2种">
+        </div>
+        <div class="form-field">
+          <label class="field-label">确认新密码</label>
+          <input type="password" id="forgotNewPwd2" class="field-input" placeholder="请再次输入新密码">
+        </div>
+        <button class="btn-primary-action" id="forgotStep2Btn" onclick="doResetPassword()">确认修改密码</button>
+      </div>
+
+      <div id="forgotStep3" class="hidden" style="text-align:center;padding:24px 0 8px;">
+        <div style="font-size:52px;color:#10b981;margin-bottom:12px">✓</div>
+        <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:6px">密码重置成功</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:24px">新密码已生效，请返回登录</p>
+        <button class="btn-primary-action" onclick="backToLogin()">返回登录</button>
+      </div>
+    </section>
+
+    <!-- Token 结果面板 -->
+    <div class="result-container" id="resultContainer">
+      <div class="result-caption">登录凭证 (Token)</div>
+      <div class="result-textarea" id="tokenDisplay"></div>
+      <button class="btn-copy-token" id="copyBtn" onclick="copyToken()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        复制 Token
+      </button>
+    </div>
+  </div>
+</main>
+
+<div id="dxCaptchaMount"></div>
+
+<script>
+// ── 请求桥接：拦截 fetch('/api/*') 走 Android 本地 Java 原生请求 ──
+(function setupNativeBridge() {
+  var _origFetch = window.fetch;
+  window.fetch = function(url, options) {
+    if (typeof url === 'string' && url.startsWith('/api/')) {
+      return new Promise(function(resolve, reject) {
+        if (window.FlutterBridge && window.FlutterBridge.postMessage) {
+          var reqId = 'req_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+          window[reqId] = function(respJsonStr) {
+            delete window[reqId];
+            try {
+              var data = JSON.parse(respJsonStr);
+              resolve({
+                ok: true,
+                status: 200,
+                json: function() { return Promise.resolve(data); },
+                text: function() { return Promise.resolve(respJsonStr); }
+              });
+            } catch (e) {
+              reject(e);
+            }
+          };
+          var body = (options && options.body) ? options.body : '';
+          var method = (options && options.method) ? options.method : 'GET';
+          window.FlutterBridge.postMessage(JSON.stringify({url: url, method: method, body: body, reqId: reqId}));
+        } else {
+          _origFetch(url, options).then(resolve).catch(reject);
+        }
+      });
+    }
+    return _origFetch.apply(this, arguments);
+  };
+})();
+
+// ── 全局状态与 UI 交互 ──
+var captchaId = '', captchaType = '', dxVerfyToken = '', dxCaptchaObj = null;
+var fCaptchaId = '', fCaptchaType = '', fDxVerfyToken = '', fDxCaptchaObj = null;
+var forgotSmsCode = '';
+
+function $(id) { return document.getElementById(id); }
+
+function showMsg(text, type) {
+  var b = $('alertBanner');
+  b.textContent = text;
+  b.className = 'alert-tip ' + (type || 'error');
+}
+
+function hideMsg() {
+  $('alertBanner').className = 'alert-tip';
+}
+
+function hideResult() {
+  $('resultContainer').classList.remove('show');
+}
+
+// 选项卡切换
+$('tabBar').addEventListener('click', function(e) {
+  var target = e.target.closest('.nav-tab-item');
+  if (!target) return;
+  document.querySelectorAll('.nav-tab-item').forEach(function(b) { b.classList.remove('active'); });
+  target.classList.add('active');
+  var isLogin = target.dataset.tab === 'login';
+  $('loginPanel').classList.toggle('hidden', !isLogin);
+  $('registerPanel').classList.toggle('hidden', isLogin);
+  $('forgotPanel').classList.add('hidden');
+  $('backBtn').style.display = 'none';
+  hideMsg(); hideResult();
+  if (!isLogin) setTimeout(refreshCaptcha, 100);
+});
+
+function showForgotPassword() {
+  $('tabBar').classList.add('hidden');
+  $('loginPanel').classList.add('hidden');
+  $('registerPanel').classList.add('hidden');
+  $('forgotPanel').classList.remove('hidden');
+  $('backBtn').style.display = 'flex';
+  hideMsg(); hideResult();
+  resetForgotSteps();
+  setTimeout(refreshForgotCaptcha, 150);
+}
+
+function backToMain() {
+  $('tabBar').classList.remove('hidden');
+  $('forgotPanel').classList.add('hidden');
+  $('loginPanel').classList.remove('hidden');
+  $('registerPanel').classList.add('hidden');
+  $('backBtn').style.display = 'none';
+  document.querySelectorAll('.nav-tab-item')[0].classList.add('active');
+  document.querySelectorAll('.nav-tab-item')[1].classList.remove('active');
+  hideMsg();
+}
+
+function backToLogin() {
+  backToMain();
+  $('loginPhone').value = $('forgotPhone').value;
+}
+
+function resetForgotSteps() {
+  $('forgotStep1').classList.remove('hidden');
+  $('forgotStep2').classList.add('hidden');
+  $('forgotStep3').classList.add('hidden');
+  $('stepDot1').className = 'step-node active';
+  $('stepDot2').className = 'step-node';
+  $('stepDot3').className = 'step-node';
+  $('stepLine1').className = 'step-bar';
+  $('stepLine2').className = 'step-bar';
+  $('forgotPhone').value = '';
+  $('forgotSmsCode').value = '';
+  $('forgotNewPwd').value = '';
+  $('forgotNewPwd2').value = '';
+  $('forgotSmsBtn').disabled = false;
+  $('forgotSmsBtn').textContent = '获取验证码';
+  fDxVerfyToken = '';
+}
+
+function advanceStep(n) {
+  for (var i = 1; i <= 3; i++) {
+    var dot = $('stepDot' + i);
+    if (i < n) dot.className = 'step-node done';
+    else if (i === n) dot.className = 'step-node active';
+    else dot.className = 'step-node';
+  }
+  for (var i = 1; i <= 2; i++) {
+    var line = $('stepLine' + i);
+    line.className = (i < n) ? 'step-bar done' : 'step-bar';
+  }
+}
+
+// ════ 验证码处理 ════
+async function refreshCaptcha() {
+  hideMsg();
+  try {
+    var r = await fetch('/api/captcha');
+    var d = await r.json();
+    if (d.status !== 'success') {
+      showMsg('获取验证码失败: ' + (d.message || ''));
+      return;
+    }
+    captchaId = d.id;
+    captchaType = d.type;
+    dxVerfyToken = '';
+    $('regPicCode').style.display = 'none';
+    $('regCaptchaImg').style.display = 'none';
+    $('dxCaptchaBtnR').style.display = 'none';
+
+    if (captchaType === 'original' && d.image) {
+      $('regPicCode').style.display = 'block';
+      $('regPicCode').value = '';
+      $('regCaptchaImg').style.display = 'block';
+      $('regCaptchaImg').src = 'data:image/png;base64,' + d.image;
+    } else {
+      $('dxCaptchaBtnR').style.display = 'flex';
+      $('dxCaptchaBtnR').textContent = '点击完成安全验证';
+      $('dxCaptchaBtnR').className = 'dx-box-btn';
+      $('dxCaptchaBtnR').disabled = false;
+      initDxCaptcha();
+    }
+  } catch (e) {
+    showMsg('验证码请求失败: ' + e.message);
+  }
+}
+
+function initDxCaptcha() {
+  if (typeof _dx === 'undefined') return;
+  try {
+    if (dxCaptchaObj) { dxCaptchaObj.hide(); dxCaptchaObj = null; }
+    dxCaptchaObj = _dx.Captcha($('dxCaptchaMount'), {
+      appId: '12b955c66f4182ea4c3566592b1d87be',
+      apiServer: 'https://cap-8.dingxiang-inc.com',
+      style: 'popup',
+      success: function(token) {
+        dxVerfyToken = token;
+        var btn = $('dxCaptchaBtnR');
+        btn.textContent = '✅ 安全验证已通过';
+        btn.className = 'dx-box-btn verified';
+        btn.disabled = true;
+        if (dxCaptchaObj) dxCaptchaObj.hide();
+      }
+    });
+  } catch (e) { console.error('DX error:', e); }
+}
+
+function openDxCaptcha() {
+  if (captchaType === 'dingxiang' && dxCaptchaObj) dxCaptchaObj.show();
+  else if (captchaType === 'original') refreshCaptcha();
+  else {
+    initDxCaptcha();
+    setTimeout(function() { if (dxCaptchaObj) dxCaptchaObj.show(); }, 300);
+  }
+}
+
+// ════ 登录 ════
+async function doLogin() {
+  var phone = $('loginPhone').value.trim();
+  var pwd = $('loginPwd').value;
+  if (!phone) { showMsg('请输入手机号码'); return; }
+  if (!pwd) { showMsg('请输入密码'); return; }
+  hideMsg(); hideResult();
+  var btn = $('loginBtn');
+  btn.disabled = true;
+  btn.textContent = '正在登录...';
+  try {
+    var r = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ userName: phone, password: pwd })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      showMsg('🎉 登录成功！', 'success');
+      $('resultContainer').classList.add('show');
+      $('tokenDisplay').textContent = d.token;
+    } else {
+      showMsg('❌ ' + (d.message || '登录失败，请检查账号密码'));
+    }
+  } catch (e) {
+    showMsg('网络请求异常: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '立即登录';
+  }
+}
+
+// ════ 注册 ════
+async function sendRegisterSms() {
+  var phone = $('regPhone').value.trim();
+  if (!/^1\d{10}$/.test(phone)) { showMsg('请输入正确的11位手机号'); return; }
+  hideMsg();
+  var code = (captchaType === 'original') ? $('regPicCode').value.trim() : dxVerfyToken;
+  if (!code) { showMsg('请先完成安全验证'); return; }
+
+  var btn = $('regSmsBtn');
+  btn.disabled = true;
+  btn.textContent = '发送中...';
+  try {
+    var r = await fetch('/api/send-register-code', {
+      method: 'POST',
+      body: JSON.stringify({
+        mobile: phone,
+        captchaHeaders: { 'x-captcha-id': captchaId, 'x-captcha-code': code }
+      })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      showMsg('验证码已发送至手机: ' + phone.slice(0,3) + '****' + phone.slice(7), 'success');
+      var sec = 60;
+      btn.textContent = sec + 's';
+      var t = setInterval(function() {
+        sec--;
+        if (sec <= 0) {
+          clearInterval(t);
+          btn.textContent = '获取验证码';
+          btn.disabled = false;
+        } else {
+          btn.textContent = sec + 's';
+        }
+      }, 1000);
+    } else {
+      btn.disabled = false;
+      btn.textContent = '获取验证码';
+      showMsg(d.message || '短信发送失败');
+      refreshCaptcha();
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '获取验证码';
+    showMsg('请求失败: ' + e.message);
+  }
+}
+
+async function doRegister() {
+  var phone = $('regPhone').value.trim();
+  var code = $('regSmsCode').value.trim();
+  var pwd = $('regPwd').value;
+  var pwd2 = $('regPwd2').value;
+
+  if (!/^1\d{10}$/.test(phone)) { showMsg('请输入有效手机号'); return; }
+  if (!code) { showMsg('请输入短信验证码'); return; }
+  if (pwd.length < 8) { showMsg('密码长度不能少于8位'); return; }
+  if (pwd !== pwd2) { showMsg('两次输入的密码不一致'); return; }
+
+  hideMsg();
+  var btn = $('regBtn');
+  btn.disabled = true;
+  btn.textContent = '正在注册...';
+  try {
+    var r = await fetch('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({ mobile: phone, code: code, newPwd: pwd, newPwdTwo: pwd2 })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      showMsg('🎉 注册成功！请使用新密码登录', 'success');
+      $('tabBar').querySelectorAll('.nav-tab-item')[0].click();
+      $('loginPhone').value = phone;
+    } else {
+      showMsg('❌ ' + (d.message || '注册失败'));
+    }
+  } catch (e) {
+    showMsg('注册请求失败: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '立即注册';
+  }
+}
+
+// ════ 忘记密码 ════
+async function refreshForgotCaptcha() {
+  hideMsg();
+  try {
+    var r = await fetch('/api/captcha');
+    var d = await r.json();
+    if (d.status !== 'success') {
+      showMsg('获取验证码失败: ' + (d.message || ''));
+      return;
+    }
+    fCaptchaId = d.id;
+    fCaptchaType = d.type;
+    fDxVerfyToken = '';
+    $('forgotPicCode').style.display = 'none';
+    $('forgotCaptchaImg').style.display = 'none';
+    $('dxCaptchaBtnF').style.display = 'none';
+
+    if (fCaptchaType === 'original' && d.image) {
+      $('forgotPicCode').style.display = 'block';
+      $('forgotPicCode').value = '';
+      $('forgotCaptchaImg').style.display = 'block';
+      $('forgotCaptchaImg').src = 'data:image/png;base64,' + d.image;
+    } else {
+      $('dxCaptchaBtnF').style.display = 'flex';
+      $('dxCaptchaBtnF').textContent = '点击完成安全验证';
+      $('dxCaptchaBtnF').className = 'dx-box-btn';
+      $('dxCaptchaBtnF').disabled = false;
+      initForgotDxCaptcha();
+    }
+  } catch (e) {
+    showMsg('验证码请求失败: ' + e.message);
+  }
+}
+
+function initForgotDxCaptcha() {
+  if (typeof _dx === 'undefined') return;
+  try {
+    if (fDxCaptchaObj) { fDxCaptchaObj.hide(); fDxCaptchaObj = null; }
+    fDxCaptchaObj = _dx.Captcha($('dxCaptchaMount'), {
+      appId: '12b955c66f4182ea4c3566592b1d87be',
+      apiServer: 'https://cap-8.dingxiang-inc.com',
+      style: 'popup',
+      success: function(token) {
+        fDxVerfyToken = token;
+        var btn = $('dxCaptchaBtnF');
+        btn.textContent = '✅ 安全验证已通过';
+        btn.className = 'dx-box-btn verified';
+        btn.disabled = true;
+        if (fDxCaptchaObj) fDxCaptchaObj.hide();
+      }
+    });
+  } catch (e) { console.error('DX forgot err:', e); }
+}
+
+function openForgotDxCaptcha() {
+  if (fCaptchaType === 'dingxiang' && fDxCaptchaObj) fDxCaptchaObj.show();
+  else if (fCaptchaType === 'original') refreshForgotCaptcha();
+  else {
+    initForgotDxCaptcha();
+    setTimeout(function() { if (fDxCaptchaObj) fDxCaptchaObj.show(); }, 300);
+  }
+}
+
+async function sendForgotSms() {
+  var phone = $('forgotPhone').value.trim();
+  if (!/^1\d{10}$/.test(phone)) { showMsg('请输入正确的11位手机号'); return; }
+  hideMsg();
+  var code = (fCaptchaType === 'original') ? $('forgotPicCode').value.trim() : fDxVerfyToken;
+  if (!code) { showMsg('请先完成安全验证'); return; }
+
+  var btn = $('forgotSmsBtn');
+  btn.disabled = true;
+  btn.textContent = '发送中...';
+  try {
+    var r = await fetch('/api/send-forgot-code', {
+      method: 'POST',
+      body: JSON.stringify({
+        mobile: phone,
+        captchaHeaders: { 'x-captcha-id': fCaptchaId, 'x-captcha-code': code }
+      })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      showMsg('验证码已发送至手机: ' + phone.slice(0,3) + '****' + phone.slice(7), 'success');
+      var sec = 60;
+      btn.textContent = sec + 's';
+      var t = setInterval(function() {
+        sec--;
+        if (sec <= 0) {
+          clearInterval(t);
+          btn.textContent = '获取验证码';
+          btn.disabled = false;
+        } else {
+          btn.textContent = sec + 's';
+        }
+      }, 1000);
+    } else {
+      btn.disabled = false;
+      btn.textContent = '获取验证码';
+      showMsg(d.message || '发送失败');
+      refreshForgotCaptcha();
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '获取验证码';
+    showMsg('请求失败: ' + e.message);
+  }
+}
+
+async function verifyForgotCode() {
+  var phone = $('forgotPhone').value.trim();
+  var code = $('forgotSmsCode').value.trim();
+  if (!/^1\d{10}$/.test(phone)) { showMsg('请输入手机号'); return; }
+  if (!code) { showMsg('请输入短信验证码'); return; }
+  hideMsg();
+  forgotSmsCode = code;
+  var btn = $('forgotStep1Btn');
+  btn.disabled = true;
+  btn.textContent = '正在验证...';
+  try {
+    var r = await fetch('/api/verify-forgot-code', {
+      method: 'POST',
+      body: JSON.stringify({ mobile: phone, code: code })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      advanceStep(2);
+      $('forgotStep1').classList.add('hidden');
+      $('forgotStep2').classList.remove('hidden');
+    } else {
+      showMsg('❌ ' + (d.message || '短信验证码错误'));
+    }
+  } catch (e) {
+    showMsg('验证失败: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '下一步';
+  }
+}
+
+async function doResetPassword() {
+  var phone = $('forgotPhone').value.trim();
+  var pwd = $('forgotNewPwd').value;
+  var pwd2 = $('forgotNewPwd2').value;
+  if (pwd.length < 8) { showMsg('新密码至少8位'); return; }
+  if (pwd !== pwd2) { showMsg('两次输入的密码不一致'); return; }
+  hideMsg();
+  var btn = $('forgotStep2Btn');
+  btn.disabled = true;
+  btn.textContent = '正在重置...';
+  try {
+    var r = await fetch('/api/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ mobile: phone, code: forgotSmsCode, newPwd: pwd })
+    });
+    var d = await r.json();
+    if (d.status === 'success') {
+      advanceStep(3);
+      $('forgotStep2').classList.add('hidden');
+      $('forgotStep3').classList.remove('hidden');
+    } else {
+      showMsg('❌ ' + (d.message || '重置密码失败'));
+    }
+  } catch (e) {
+    showMsg('重置失败: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '确认修改密码';
+  }
+}
+
+// ════ 复制 Token ════
+function copyToken() {
+  var text = $('tokenDisplay').textContent;
+  if (!text) return;
+  if (window.FlutterBridge && window.FlutterBridge.postMessage) {
+    window.FlutterBridge.postMessage(JSON.stringify({action:'copy', text: text}));
+  }
+  var btn = $('copyBtn');
+  btn.textContent = '✅ 已成功复制到剪贴板';
+  btn.classList.add('copied');
+  setTimeout(function() {
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> 复制 Token';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+// 主题切换桥接支持
+window.setAppTheme = function(theme) {
+  var isDark = theme === 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('app_theme', theme); } catch(e){}
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+    document.body.classList.remove('light');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+  }
+};
+
+// 页面加载启动
+setTimeout(function() {
+  if (typeof _dx !== 'undefined') {
+    initDxCaptcha();
+    initForgotDxCaptcha();
+  }
+  refreshCaptcha();
+}, 200);
+</script>
+</body>
+</html>
