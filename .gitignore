@@ -1,0 +1,48 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+
+# IntelliJ / VS Code
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Flutter/Dart/Pub
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Android
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+android/key.properties
+*.keystore
+*.jks
+
+# iOS
+**/ios/**/.tailor/
+**/ios/**/Flutter/App.framework
+**/ios/**/Flutter/Flutter.framework
+**/ios/**/Flutter/Flutter.podspec
+**/ios/**/Flutter/ephemeral
+**/ios/**/GeneratedPluginRegistrant.*
+ios/Pods/
+ios/.symlinks/
+
+# Build outputs
+*.apk
+*.ipa
+Payload/
