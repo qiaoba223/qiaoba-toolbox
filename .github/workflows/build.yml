@@ -1,0 +1,172 @@
+name: Build & Release (Android APK + iOS IPA)
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android APK (arm64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # 与 Dumb-Panel-APP 保持完全一致的生产级 Flutter SDK 3.41.5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.5'
+          channel: stable
+          cache: true
+
+      - name: Flutter create android platform
+        run: flutter create --platforms=android --org com.qiaoba --project-name qiaoba_toolbox .
+
+      - name: Patch Android config
+        run: python3 tool/patch_platforms.py
+
+      - name: Inject installer channel
+        run: python3 tool/inject_installer.py
+
+      - run: flutter pub get
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/qiaoba.keystore
+          ls -la android/app/qiaoba.keystore
+
+      - name: Inject signing config
+        run: python3 tool/inject_signing.py
+
+      - name: Build arm64 APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: Rename
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk qiaoba-toolbox.apk
+          ls -la qiaoba-toolbox.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: qiaoba-toolbox.apk
+
+      - name: Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: qiaoba-toolbox.apk
+          generate_release_notes: true
+
+  build-ios:
+    name: Build iOS IPA (unsigned, TrollStore compatible)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 关键对齐：与 Dumb-Panel-APP 严格使用完全相同的 Flutter 3.41.5 (支持 iOS 13+)
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.5'
+          channel: stable
+          cache: true
+
+      - name: Disable Swift Package Manager
+        run: flutter config --no-enable-swift-package-manager
+
+      - name: Flutter create ios platform
+        run: flutter create --platforms=ios --org com.qiaoba --project-name qiaoba_toolbox .
+
+      - name: Patch iOS config
+        run: python3 tool/patch_platforms.py
+
+      - name: Setup Podfile
+        run: cp tool/ios_podfile ios/Podfile
+
+      - run: flutter pub get
+
+      - name: Pod install
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Flutter config only
+        run: flutter build ios --release --config-only --no-codesign
+
+      - name: xcodebuild archive
+        run: |
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination generic/platform=iOS \
+            -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            archive
+
+      - name: Pack IPA
+        run: |
+          APP="$PWD/build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app"
+          if [ ! -d "$APP" ]; then
+            APP=$(find build/ios -maxdepth 6 -name "Runner.app" -type d | head -n 1)
+          fi
+          echo "APP=$APP"
+          
+          # 关键权限修复：确保所有 dylib / framework / 二进制文件拥有 755 可执行权限
+          echo "=== 赋予所有 Mach-O 与 dylib 可执行权限 755 ==="
+          chmod 755 "$APP/Runner" || true
+          chmod -R 755 "$APP/Frameworks" || true
+          find "$APP" -type f -perm 644 -exec sh -c '
+            for f; do
+              if head -c 4 "$f" | grep -qE "^\xca\xfe\xba\xbe|^\xcf\xfa\xed\xfe|^\xce\xfa\xed\xfe"; then
+                chmod 755 "$f"
+                echo "Chmod 755 -> $f"
+              fi
+            done
+          ' sh {} +
+
+          echo "=== Frameworks 最终清单 ==="
+          ls -la "$APP/Frameworks/"
+
+          mkdir -p build/ios/ipa/Payload
+          cp -R "$APP" build/ios/ipa/Payload/Runner.app
+
+          # 清除干扰 TrollStore 签名的多余描述文件
+          find build/ios/ipa/Payload -name "embedded.mobileprovision" -delete 2>/dev/null || true
+          find build/ios/ipa/Payload -name "archived-expanded-entitlements.xcent" -delete 2>/dev/null || true
+
+          (
+            cd build/ios/ipa
+            ditto -c -k --sequesterRsrc --keepParent Payload qiaoba-toolbox-ios-unsigned.ipa
+          )
+          mv build/ios/ipa/qiaoba-toolbox-ios-unsigned.ipa .
+          ls -la qiaoba-toolbox-ios-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: qiaoba-toolbox-ios-unsigned.ipa
+
+      - name: Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: qiaoba-toolbox-ios-unsigned.ipa
+          generate_release_notes: true
