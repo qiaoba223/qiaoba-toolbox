@@ -18,7 +18,7 @@ class AppUpdateService {
       final info = await PackageInfo.fromPlatform();
       return info.version;
     } catch (_) {
-      return '3.8.5';
+      return '3.8.6';
     }
   }
 

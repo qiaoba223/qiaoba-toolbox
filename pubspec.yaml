@@ -1,7 +1,7 @@
 name: qiaoba_toolbox
 description: "小助手 - 现代化多功能聚合工具箱"
 publish_to: 'none'
-version: 3.8.5+32
+version: 3.8.6+33
 
 environment:
   sdk: ^3.5.0

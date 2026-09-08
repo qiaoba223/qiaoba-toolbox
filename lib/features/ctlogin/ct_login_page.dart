@@ -524,29 +524,73 @@ class _CtLoginPageState extends State<CtLoginPage> {
                           : AppTheme.lightTextMain)),
             ]),
             Row(children: [
-              TextButton.icon(
-                onPressed: _history.isEmpty
-                    ? null
-                    : () => _copyAllHistory(rawId: false),
-                icon: const Icon(Icons.copy_all_rounded,
-                    size: 15, color: AppTheme.ctColor),
-                label: const Text('全部#转换ID',
-                    style: TextStyle(fontSize: 12, color: AppTheme.ctColor)),
-                style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    minimumSize: const Size(0, 32)),
-              ),
-              TextButton.icon(
-                onPressed: _history.isEmpty
-                    ? null
-                    : () => _copyAllHistory(rawId: true),
-                icon: const Icon(Icons.copy_all_rounded,
-                    size: 15, color: AppTheme.ctColor),
-                label: const Text('全部#设备ID',
-                    style: TextStyle(fontSize: 12, color: AppTheme.ctColor)),
-                style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    minimumSize: const Size(0, 32)),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'enc') {
+                    _copyAllHistory(rawId: false);
+                  } else if (value == 'raw') {
+                    _copyAllHistory(rawId: true);
+                  }
+                },
+                enabled: _history.isNotEmpty,
+                tooltip: '复制全部',
+                padding: EdgeInsets.zero,
+                splashRadius: 20,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                      color:
+                          isDark ? AppTheme.darkBorder : AppTheme.lightBorder),
+                ),
+                color: isDark ? AppTheme.darkCard : Colors.white,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'enc',
+                    height: 44,
+                    child: Row(children: [
+                      const Icon(Icons.copy_all_rounded,
+                          size: 16, color: AppTheme.ctColor),
+                      const SizedBox(width: 10),
+                      Text('复制全部（账号#密码#转换ID）',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? AppTheme.darkTextMain
+                                  : AppTheme.lightTextMain)),
+                    ]),
+                  ),
+                  PopupMenuItem(
+                    value: 'raw',
+                    height: 44,
+                    child: Row(children: [
+                      const Icon(Icons.copy_all_rounded,
+                          size: 16, color: AppTheme.ctColor),
+                      const SizedBox(width: 10),
+                      Text('复制全部（账号#密码#设备ID）',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? AppTheme.darkTextMain
+                                  : AppTheme.lightTextMain)),
+                    ]),
+                  ),
+                ],
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.copy_all_rounded,
+                        size: 15, color: AppTheme.ctColor),
+                    const SizedBox(width: 4),
+                    const Text('复制全部',
+                        style: TextStyle(
+                            fontSize: 12, color: AppTheme.ctColor)),
+                    const Icon(Icons.arrow_drop_down_rounded,
+                        size: 18, color: AppTheme.ctColor),
+                  ]),
+                ),
               ),
               TextButton.icon(
                 onPressed: () async {
