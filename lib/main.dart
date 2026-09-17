@@ -9,7 +9,6 @@ import 'core/theme/animations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_widgets.dart';
 import 'features/ctlogin/ct_login_page.dart';
-import 'features/sflogin/sf_login_page.dart';
 import 'features/yspck/yspck_page.dart';
 import 'features/zto/zto_page.dart';
 
@@ -377,21 +376,6 @@ class _RootPageState extends State<RootPage>
                   title: '中通会员助手',
                   desc: '账号登录与找回密码',
                   onTap: () => _open(context, const ZtoPage()),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // 工具卡片 4: 顺丰登录助手（官方 H5 内嵌，自动捕获 CK）
-              AppAnimations.popIn(
-                index: 4,
-                child: _ModernToolCard(
-                  color: const Color(0xFFE63946),
-                  gradientColors: const [Color(0xFFE63946), Color(0xFFC1121F)],
-                  icon: Icons.local_shipping_rounded,
-                  title: '顺丰登录助手',
-                  desc: '官方环境登录 · 自动捕获 CK',
-                  onTap: () => _open(context, const SfLoginPage()),
                 ),
               ),
 
